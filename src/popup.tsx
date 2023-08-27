@@ -1,53 +1,27 @@
 import React, { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 
-const Popup = () => {
-  const [count, setCount] = useState(0);
-  const [currentURL, setCurrentURL] = useState<string>();
+import chakraTheme from '@chakra-ui/theme'
+import { ChakraBaseProvider, extendBaseTheme } from "@chakra-ui/react";
 
-  useEffect(() => {
-    chrome.action.setBadgeText({ text: count.toString() });
-  }, [count]);
+import App from "./components/App";
 
-  useEffect(() => {
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      setCurrentURL(tabs[0].url);
-    });
-  }, []);
+const { Accordion, Link,Checkbox} = chakraTheme.components;
+const theme = extendBaseTheme({
+  components: {
+    Accordion,
+    Link,
+    Checkbox
+  },
+});
 
-  const changeBackground = () => {
-    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-      const tab = tabs[0];
-      if (tab.id) {
-        chrome.tabs.sendMessage(
-          tab.id,
-          {
-            color: "#555555",
-          },
-          (msg) => {
-            console.log("result message:", msg);
-          }
-        );
-      }
-    });
-  };
-
+function Popup() {
   return (
-    <>
-      <ul style={{ minWidth: "700px" }}>
-        <li>Current URL: {currentURL}</li>
-        <li>Current Time: {new Date().toLocaleTimeString()}</li>
-      </ul>
-      <button
-        onClick={() => setCount(count + 1)}
-        style={{ marginRight: "5px" }}
-      >
-        count up
-      </button>
-      <button onClick={changeBackground}>change background</button>
-    </>
+    <ChakraBaseProvider>
+      <App />
+    </ChakraBaseProvider>
   );
-};
+}
 
 const root = createRoot(document.getElementById("root")!);
 
